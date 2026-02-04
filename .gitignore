@@ -48,3 +48,5 @@ save/
 
 **/data/**/*.csv
 
+data/*
+Enforcing_Group_Fairness_in_Privacy_Preserving/data/*
