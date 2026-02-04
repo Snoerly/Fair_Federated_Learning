@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ML / experiment artifacts
+logs/
+**/logs/
+*.tfevents.*
+
+# Common output folders in this workspace
+save/
+**/save/
+
+# Serialized artifacts (usually generated; keep only if intentionally versioned)
+*.pkl
+*.joblib
+
+# PyTorch / Lightning checkpoints
+*.pt
+*.pth
+*.ckpt
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Optional: ignore datasets if you don't want to commit them.
+# Keep raw datasets out of git (but still allow code like data/loader.py).
+
+**/data/**/*.csv
+
