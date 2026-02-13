@@ -34,7 +34,7 @@ python federated_main.py --dataset communities_crime --model mlp --num_classes 2
 python federated_main.py --dataset communities_crime --model mlp --num_classes 2 --num_users 10 --iid 1 --sensitive_attr racepctblack  
 python federated_main.py --dataset communities_crime --model mlp --num_classes 2 --num_users 5 --iid 1 --sensitive_attr racepctblack
 
-# Enforcing Group Fairness (neuer Algorithmus)
+# Enforcing Group Fairness 
 
 
 ################################
@@ -104,4 +104,3 @@ python main.py --dataset communities --num_users 3 --tabular_noniid label-skew -
 python main.py --dataset communities --num_users 10 --iid --frac 0.1 --rounds 10 --local_epochs 10 --local_bs 10 --seed 1
 python main.py --dataset communities --num_users 5 --iid --frac 0.1 --rounds 10 --local_epochs 10 --local_bs 10 --seed 1
 
-FINISH!!
