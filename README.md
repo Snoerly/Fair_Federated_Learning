@@ -13,8 +13,8 @@ We report our findings in this [Paper]().
 
 ### Datasets
 
-- [Adult]()
-- [Bank]()
-- [Communities&Crime]()
-- [KDD Census]()
+- [Adult](https://archive.ics.uci.edu/dataset/2/adult)
+- [Bank Marketing](https://archive.ics.uci.edu/dataset/222/bank+marketing)
+- [Communities and Crime](https://archive.ics.uci.edu/dataset/183/communities+and+crime)
+- [Census-Income (KDD)](https://archive.ics.uci.edu/dataset/117/census+income+kdd)
 
