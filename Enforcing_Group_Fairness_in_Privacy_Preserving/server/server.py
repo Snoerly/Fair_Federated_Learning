@@ -32,14 +32,16 @@ import numpy as np
 
 from server.agdg import AGDG
 from server.lsh_cadc import LSH_CADC
-from server.fairness import FairnessMetrics, metrics_from_scores, client_fairness_bias
+from server.fairness import metrics_from_scores, client_fairness_bias
 from server.aggregation import compute_alphas, aggregate_state_dicts
 from server.gbcfss import GBCFSSConfig, greedy_select_gbcfss
 
 
 @dataclass
 class GFLServerConfig:
-    fairness_mode: str = "eo"  # "eo" or "dp" for fairness contribution / monitoring focus
+    fairness_mode: str = (
+        "eo"  # "eo" or "dp" for fairness contribution / monitoring focus
+    )
     bias_scalar_mode: str = "sum"  # "sum" or "max" to convert (EOD,DPD) -> Fi
     use_additive_afw: bool = False
 
@@ -68,7 +70,9 @@ class GFLServer:
     ############################################
 
     @staticmethod
-    def _stack_synth_numeric(synth_data: Dict[int, Dict[str, np.ndarray]]) -> Tuple[np.ndarray, np.ndarray]:
+    def _stack_synth_numeric(
+        synth_data: Dict[int, Dict[str, np.ndarray]],
+    ) -> Tuple[np.ndarray, np.ndarray]:
         Xn = []
         gg = []
         for g, d in synth_data.items():
@@ -133,7 +137,11 @@ class GFLServer:
 
         # 3) Build full synthetic feature matrix
         X_num_synth, g_synth = self._stack_synth_numeric(synth_data)
-        X_cat_synth = np.vstack([synth_cat[g] for g in synth_cat]) if real_X_cat.shape[1] > 0 else np.empty((X_num_synth.shape[0], 0))
+        X_cat_synth = (
+            np.vstack([synth_cat[g] for g in synth_cat])
+            if real_X_cat.shape[1] > 0
+            else np.empty((X_num_synth.shape[0], 0))
+        )
         X_synth = np.hstack([X_num_synth, X_cat_synth])
 
         # 4) Generate labels for synthetic dataset
@@ -197,7 +205,9 @@ class GFLServer:
             client_state_dicts,
             alphas,
             use_additive=self.cfg.use_additive_afw,
-            global_state_dict=self.global_model.state_dict() if self.cfg.use_additive_afw else None,
+            global_state_dict=self.global_model.state_dict()
+            if self.cfg.use_additive_afw
+            else None,
         )
         self.global_model.load_state_dict(new_state)
 

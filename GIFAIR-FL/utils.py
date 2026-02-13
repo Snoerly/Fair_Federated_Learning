@@ -17,22 +17,27 @@ from tabular_datasets import (
 
 
 def get_dataset(args):
-    """ Returns train and test datasets and a user group which is a dict where
+    """Returns train and test datasets and a user group which is a dict where
     the keys are the user index and the values are the corresponding data for
     each of those users.
     """
 
-    if args.dataset == 'cifar':
-        data_dir = '../data/cifar/'
+    if args.dataset == "cifar":
+        data_dir = "../data/cifar/"
         apply_transform = transforms.Compose(
-            [transforms.ToTensor(),
-             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+            [
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            ]
+        )
 
-        train_dataset = datasets.CIFAR10(data_dir, train=True, download=True,
-                                       transform=apply_transform)
+        train_dataset = datasets.CIFAR10(
+            data_dir, train=True, download=True, transform=apply_transform
+        )
 
-        test_dataset = datasets.CIFAR10(data_dir, train=False, download=True,
-                                      transform=apply_transform)
+        test_dataset = datasets.CIFAR10(
+            data_dir, train=False, download=True, transform=apply_transform
+        )
 
         # sample training data amongst users
         if args.iid:
@@ -47,21 +52,23 @@ def get_dataset(args):
                 # Chose euqal splits for every user
                 user_groups = cifar_noniid(train_dataset, args.num_users)
 
-    elif args.dataset in ['mnist', 'fmnist']:
-        if args.dataset == 'mnist':
-            data_dir = '../data/mnist/'
+    elif args.dataset in ["mnist", "fmnist"]:
+        if args.dataset == "mnist":
+            data_dir = "../data/mnist/"
         else:
-            data_dir = '../data/fmnist/'
+            data_dir = "../data/fmnist/"
 
-        apply_transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,))])
+        apply_transform = transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+        )
 
-        train_dataset = datasets.MNIST(data_dir, train=True, download=True,
-                                       transform=apply_transform)
+        train_dataset = datasets.MNIST(
+            data_dir, train=True, download=True, transform=apply_transform
+        )
 
-        test_dataset = datasets.MNIST(data_dir, train=False, download=True,
-                                      transform=apply_transform)
+        test_dataset = datasets.MNIST(
+            data_dir, train=False, download=True, transform=apply_transform
+        )
 
         # sample training data amongst users
         if args.iid:
@@ -76,15 +83,15 @@ def get_dataset(args):
                 # Chose euqal splits for every user
                 user_groups = mnist_noniid(train_dataset, args.num_users)
 
-    elif args.dataset == 'adult':
+    elif args.dataset == "adult":
         # Tabellarischer Adult-Datensatz aus CSV
-        data_dir = '../data/adult/'
+        data_dir = "../data/adult/"
         train_dataset, test_dataset, num_classes = load_adult_dataset(
-            data_dir, sensitive_attr=getattr(args, 'sensitive_attr', 'sex')
+            data_dir, sensitive_attr=getattr(args, "sensitive_attr", "sex")
         )
 
         # Falls num_classes nicht zu den Argumenten passt, überschreiben
-        if hasattr(args, 'num_classes'):
+        if hasattr(args, "num_classes"):
             args.num_classes = num_classes
 
         # Aufteilung der Zeilen auf Clients
@@ -93,69 +100,69 @@ def get_dataset(args):
             user_groups = tabular_iid(train_dataset, args.num_users)
         else:
             # Non-IID Splits: label- oder feature-skew
-            split_type = getattr(args, 'tabular_noniid', 'label-skew')
-            if split_type == 'feature-skew':
+            split_type = getattr(args, "tabular_noniid", "label-skew")
+            if split_type == "feature-skew":
                 user_groups = tabular_noniid_feature_skew(train_dataset, args.num_users)
             else:
                 user_groups = tabular_noniid_label_skew(train_dataset, args.num_users)
 
-    elif args.dataset == 'bank':
+    elif args.dataset == "bank":
         # Tabellarischer Bank-Datensatz aus CSV
-        data_dir = '../data/bank/'
+        data_dir = "../data/bank/"
         train_dataset, test_dataset, num_classes = load_bank_dataset(
-            data_dir, sensitive_attr=getattr(args, 'sensitive_attr', 'age')
+            data_dir, sensitive_attr=getattr(args, "sensitive_attr", "age")
         )
 
-        if hasattr(args, 'num_classes'):
+        if hasattr(args, "num_classes"):
             args.num_classes = num_classes
 
         if args.iid:
             user_groups = tabular_iid(train_dataset, args.num_users)
         else:
-            split_type = getattr(args, 'tabular_noniid', 'label-skew')
-            if split_type == 'feature-skew':
+            split_type = getattr(args, "tabular_noniid", "label-skew")
+            if split_type == "feature-skew":
                 user_groups = tabular_noniid_feature_skew(train_dataset, args.num_users)
             else:
                 user_groups = tabular_noniid_label_skew(train_dataset, args.num_users)
 
-    elif args.dataset == 'census_income_kdd':
+    elif args.dataset == "census_income_kdd":
         # Tabellarischer Census Income KDD-Datensatz aus CSV
-        data_dir = '../data/census_income_kdd/'
+        data_dir = "../data/census_income_kdd/"
         train_dataset, test_dataset, num_classes = load_census_income_kdd_dataset(
-            data_dir, sensitive_attr=getattr(args, 'sensitive_attr', 'ASEX')
+            data_dir, sensitive_attr=getattr(args, "sensitive_attr", "ASEX")
         )
 
-        if hasattr(args, 'num_classes'):
+        if hasattr(args, "num_classes"):
             args.num_classes = num_classes
 
         if args.iid:
             user_groups = tabular_iid(train_dataset, args.num_users)
         else:
-            split_type = getattr(args, 'tabular_noniid', 'label-skew')
-            if split_type == 'feature-skew':
+            split_type = getattr(args, "tabular_noniid", "label-skew")
+            if split_type == "feature-skew":
                 user_groups = tabular_noniid_feature_skew(train_dataset, args.num_users)
             else:
                 user_groups = tabular_noniid_label_skew(train_dataset, args.num_users)
 
-    elif args.dataset == 'communities_crime':
+    elif args.dataset == "communities_crime":
         # Tabellarischer Communities and Crime-Datensatz aus CSV
-        data_dir = '../data/communities_crime/'
+        data_dir = "../data/communities_crime/"
         train_dataset, test_dataset, num_classes = load_communities_crime_dataset(
-            data_dir, sensitive_attr=getattr(args, 'sensitive_attr', 'racepctblack')
+            data_dir, sensitive_attr=getattr(args, "sensitive_attr", "racepctblack")
         )
 
-        if hasattr(args, 'num_classes'):
+        if hasattr(args, "num_classes"):
             args.num_classes = num_classes
 
         if args.iid:
             user_groups = tabular_iid(train_dataset, args.num_users)
         else:
-            split_type = getattr(args, 'tabular_noniid', 'label-skew')
-            if split_type == 'feature-skew':
+            split_type = getattr(args, "tabular_noniid", "label-skew")
+            if split_type == "feature-skew":
                 user_groups = tabular_noniid_feature_skew(train_dataset, args.num_users)
             else:
                 user_groups = tabular_noniid_label_skew(train_dataset, args.num_users)
-            
+
     return train_dataset, test_dataset, user_groups
 
 
@@ -172,18 +179,18 @@ def average_weights(w):
 
 
 def exp_details(args):
-    print('\nExperimental details:')
-    print(f'    Model     : {args.model}')
-    print(f'    Optimizer : {args.optimizer}')
-    print(f'    Learning  : {args.lr}')
-    print(f'    Global Rounds   : {args.epochs}\n')
+    print("\nExperimental details:")
+    print(f"    Model     : {args.model}")
+    print(f"    Optimizer : {args.optimizer}")
+    print(f"    Learning  : {args.lr}")
+    print(f"    Global Rounds   : {args.epochs}\n")
 
-    print('    Federated parameters:')
+    print("    Federated parameters:")
     if args.iid:
-        print('    IID')
+        print("    IID")
     else:
-        print('    Non-IID')
-    print(f'    Fraction of users  : {args.frac}')
-    print(f'    Local Batch size   : {args.local_bs}')
-    print(f'    Local Epochs       : {args.local_ep}\n')
+        print("    Non-IID")
+    print(f"    Fraction of users  : {args.frac}")
+    print(f"    Local Batch size   : {args.local_bs}")
+    print(f"    Local Epochs       : {args.local_ep}\n")
     return

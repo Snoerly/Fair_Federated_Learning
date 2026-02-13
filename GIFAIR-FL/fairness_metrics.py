@@ -64,11 +64,11 @@ def compute_fairness_metrics(y_true, y_pred, groups):
     di_ratio = _safe_div(p_pos_unpriv, p_pos_priv, default=0.0)
 
     return {
-        'accuracy': float(accuracy),
-        'eop_gap': float(eop_gap),
-        'di_ratio': float(di_ratio),
-        'tpr_priv': float(tpr_priv),
-        'tpr_unpriv': float(tpr_unpriv),
-        'p_pos_unpriv': float(p_pos_unpriv),
-        'p_pos_priv': float(p_pos_priv),
+        "accuracy": float(accuracy),
+        "eop_gap": float(eop_gap),
+        "di_ratio": float(di_ratio),
+        "tpr_priv": float(tpr_priv),
+        "tpr_unpriv": float(tpr_unpriv),
+        "p_pos_unpriv": float(p_pos_unpriv),
+        "p_pos_priv": float(p_pos_priv),
     }

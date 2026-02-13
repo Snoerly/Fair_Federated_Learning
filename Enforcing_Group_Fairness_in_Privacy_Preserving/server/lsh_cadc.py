@@ -78,7 +78,11 @@ class LSH_CADC:
         seed  : random seed for projections
         """
         X_num = _ensure_2d(np.asarray(X_num, dtype=float))
-        X_cat = _ensure_2d(np.asarray(X_cat, dtype=int)) if np.asarray(X_cat).size else np.empty((X_num.shape[0], 0), dtype=int)
+        X_cat = (
+            _ensure_2d(np.asarray(X_cat, dtype=int))
+            if np.asarray(X_cat).size
+            else np.empty((X_num.shape[0], 0), dtype=int)
+        )
         g = np.asarray(g).reshape(-1)
 
         if X_num.shape[0] != g.shape[0]:
@@ -157,7 +161,9 @@ class LSH_CADC:
             h = (h << 1) | int(b)
         return int(h)
 
-    def _mahalanobis(self, x: np.ndarray, Xcand: np.ndarray, VI: np.ndarray) -> np.ndarray:
+    def _mahalanobis(
+        self, x: np.ndarray, Xcand: np.ndarray, VI: np.ndarray
+    ) -> np.ndarray:
         """
         Compute squared Mahalanobis distance from x to each row in Xcand.
         """
@@ -175,7 +181,13 @@ class LSH_CADC:
         attrs by nearest neighbor (within LSH bucket) from real data.
         Returns dict: g -> X_cat_synth (N_g x d_cat)
         """
-        if self._X_num is None or self._X_cat is None or self._g is None or self._buckets is None or self._cov_inv is None:
+        if (
+            self._X_num is None
+            or self._X_cat is None
+            or self._g is None
+            or self._buckets is None
+            or self._cov_inv is None
+        ):
             raise RuntimeError("LSH_CADC: call fit() before complete()")
 
         X_num_real = self._X_num
@@ -199,7 +211,11 @@ class LSH_CADC:
             # choose VI for this group (fallback to any VI)
             VI = cov_inv.get(grp, next(iter(cov_inv.values())))
 
-            Xc_s = np.empty((Xn_s.shape[0], d_cat), dtype=int) if d_cat > 0 else np.empty((Xn_s.shape[0], 0), dtype=int)
+            Xc_s = (
+                np.empty((Xn_s.shape[0], d_cat), dtype=int)
+                if d_cat > 0
+                else np.empty((Xn_s.shape[0], 0), dtype=int)
+            )
 
             # Precompute indices in the same group
             same_group_idxs = np.where(g_real.astype(int) == grp)[0]

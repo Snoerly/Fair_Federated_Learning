@@ -25,7 +25,8 @@ class ConstraintLoss(nn.Module):
         out = torch.sigmoid(out)
         mu = self.mu_f(X=X, out=out, sensitive=sensitive, y=y)
         gap_constraint = F.relu(
-            torch.mv(self.M.to(self.device), mu.to(self.device)) - self.c.to(self.device)
+            torch.mv(self.M.to(self.device), mu.to(self.device))
+            - self.c.to(self.device)
         )
         if self.p_norm == 2:
             cons = self.alpha * torch.dot(gap_constraint, gap_constraint)
@@ -39,6 +40,7 @@ def _safe_mean(t: torch.Tensor) -> torch.Tensor:
     if t.numel() == 0:
         return torch.tensor(0.0, device=t.device)
     return t.mean()
+
 
 class DemographicParityLoss(ConstraintLoss):
     def __init__(self, sensitive_classes=[0, 1], alpha=1, p_norm=2):
@@ -70,8 +72,8 @@ class DemographicParityLoss(ConstraintLoss):
         for v in self.sensitive_classes:
             idx_true = sensitive == v  # torch.bool
             expected_values_list.append(_safe_mean(out[idx_true]))
-            #("bismillah")
-            
+            # ("bismillah")
+
         expected_values_list.append(_safe_mean(out))
         return torch.stack(expected_values_list)
 

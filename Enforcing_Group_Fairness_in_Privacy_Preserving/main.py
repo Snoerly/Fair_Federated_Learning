@@ -41,6 +41,7 @@ from server.server import GFLServer, GFLServerConfig
 # Utils
 ########################################
 
+
 def set_seed(seed: int):
     np.random.seed(seed)
     torch.manual_seed(seed)
@@ -72,14 +73,21 @@ def train_test_split_stratified(X_num, X_cat, y, g, test_size=0.2, seed=42):
     rng.shuffle(train_idx)
 
     return (
-        X_num[train_idx], X_cat[train_idx], y[train_idx], g[train_idx],
-        X_num[test_idx],  X_cat[test_idx],  y[test_idx],  g[test_idx],
+        X_num[train_idx],
+        X_cat[train_idx],
+        y[train_idx],
+        g[train_idx],
+        X_num[test_idx],
+        X_cat[test_idx],
+        y[test_idx],
+        g[test_idx],
     )
 
 
 ########################################
 # Federated partitioning
 ########################################
+
 
 def partition_iid(n: int, num_users: int, seed: int = 42) -> Dict[int, np.ndarray]:
     rng = np.random.default_rng(seed)
@@ -89,7 +97,9 @@ def partition_iid(n: int, num_users: int, seed: int = 42) -> Dict[int, np.ndarra
     return {i: splits[i] for i in range(num_users)}
 
 
-def partition_label_skew(y: np.ndarray, num_users: int, shards_per_user: int = 2, seed: int = 42) -> Dict[int, np.ndarray]:
+def partition_label_skew(
+    y: np.ndarray, num_users: int, shards_per_user: int = 2, seed: int = 42
+) -> Dict[int, np.ndarray]:
     rng = np.random.default_rng(seed)
     idxs = np.arange(len(y))
     idxs = idxs[np.argsort(y)]
@@ -100,11 +110,14 @@ def partition_label_skew(y: np.ndarray, num_users: int, shards_per_user: int = 2
 
     user_groups: Dict[int, np.ndarray] = {}
     for u in range(num_users):
-        assigned = shards[u * shards_per_user:(u + 1) * shards_per_user]
+        assigned = shards[u * shards_per_user : (u + 1) * shards_per_user]
         user_groups[u] = np.concatenate(assigned)
     return user_groups
 
-def partition_feature_skew(X_num: np.ndarray, num_users: int, seed: int = 42) -> Dict[int, np.ndarray]:
+
+def partition_feature_skew(
+    X_num: np.ndarray, num_users: int, seed: int = 42
+) -> Dict[int, np.ndarray]:
     rng = np.random.default_rng(seed)
     n = X_num.shape[0]
     if n == 0:
@@ -130,10 +143,10 @@ def partition_feature_skew(X_num: np.ndarray, num_users: int, seed: int = 42) ->
     return user_groups
 
 
-
 ########################################
 # Tabular model (PyTorch)
 ########################################
+
 
 class TabularNet(nn.Module):
     """
@@ -143,7 +156,13 @@ class TabularNet(nn.Module):
       forward(x_num, x_cat) -> logits
     """
 
-    def __init__(self, d_num: int, cat_cardinalities: List[int], emb_dim: int = 8, hidden: int = 128):
+    def __init__(
+        self,
+        d_num: int,
+        cat_cardinalities: List[int],
+        emb_dim: int = 8,
+        hidden: int = 128,
+    ):
         super().__init__()
         self.d_num = d_num
         self.cat_cardinalities = cat_cardinalities
@@ -191,7 +210,13 @@ class TorchModelWrapper:
     - train_on_dataset(X_full, y)
     """
 
-    def __init__(self, model: nn.Module, device: torch.device, lr: float = 1e-3, batch_size: int = 256):
+    def __init__(
+        self,
+        model: nn.Module,
+        device: torch.device,
+        lr: float = 1e-3,
+        batch_size: int = 256,
+    ):
         self.model = model
         self.device = device
         self.lr = lr
@@ -199,7 +224,12 @@ class TorchModelWrapper:
         self.model.to(self.device)
 
     def clone(self):
-        return TorchModelWrapper(copy.deepcopy(self.model), self.device, lr=self.lr, batch_size=self.batch_size)
+        return TorchModelWrapper(
+            copy.deepcopy(self.model),
+            self.device,
+            lr=self.lr,
+            batch_size=self.batch_size,
+        )
 
     def state_dict(self):
         return self.model.state_dict()
@@ -227,7 +257,9 @@ class TorchModelWrapper:
             probs = torch.sigmoid(logits)
         return probs.detach().cpu().numpy().reshape(-1)
 
-    def train_on_dataset(self, X: np.ndarray, y: np.ndarray, epochs: int = 1) -> Tuple[float, float]:
+    def train_on_dataset(
+        self, X: np.ndarray, y: np.ndarray, epochs: int = 1
+    ) -> Tuple[float, float]:
         """
         Train and return (avg_loss, avg_accuracy) on that dataset for logging.
         """
@@ -284,6 +316,7 @@ class TorchModelWrapper:
 # Local client training
 ########################################
 
+
 def local_train_one_client(
     global_wrapper: TorchModelWrapper,
     X_num: np.ndarray,
@@ -307,7 +340,10 @@ def local_train_one_client(
 # Evaluation (compat fields)
 ########################################
 
-def compute_metrics_compat(wrapper: TorchModelWrapper, X_num, X_cat, y, g) -> Dict[str, float]:
+
+def compute_metrics_compat(
+    wrapper: TorchModelWrapper, X_num, X_cat, y, g
+) -> Dict[str, float]:
     """
     Compute metrics compatible with your existing CSV schema:
     - test_accuracy
@@ -327,17 +363,17 @@ def compute_metrics_compat(wrapper: TorchModelWrapper, X_num, X_cat, y, g) -> Di
 
     # Define privileged/unprivileged groups (consistent)
     # priv = g==1, unpriv = g==0
-    priv = (g == 1)
-    unpriv = (g == 0)
+    priv = g == 1
+    unpriv = g == 0
 
-    p_pos_priv = _safe_mean(y_pred[priv])     # P(yhat=1 | g=1)
-    p_pos_unpriv = _safe_mean(y_pred[unpriv]) # P(yhat=1 | g=0)
+    p_pos_priv = _safe_mean(y_pred[priv])  # P(yhat=1 | g=1)
+    p_pos_unpriv = _safe_mean(y_pred[unpriv])  # P(yhat=1 | g=0)
 
     eps = 1e-12
     di_ratio = float(p_pos_unpriv / (p_pos_priv + eps))
 
     # True positive rates by group (condition on y=1)
-    pos = (y == 1)
+    pos = y == 1
     tpr_priv = _safe_mean(y_pred[priv & pos]) if np.any(priv & pos) else 0.0
     tpr_unpriv = _safe_mean(y_pred[unpriv & pos]) if np.any(unpriv & pos) else 0.0
 
@@ -359,6 +395,7 @@ def compute_metrics_compat(wrapper: TorchModelWrapper, X_num, X_cat, y, g) -> Di
 # Sensitive attr mapping (for CSV metadata)
 ########################################
 
+
 def sensitive_attr_for_dataset(name: str) -> str:
     name = name.lower()
     if name == "adult":
@@ -376,10 +413,16 @@ def sensitive_attr_for_dataset(name: str) -> str:
 # Args
 ########################################
 
+
 def parse_args():
     p = argparse.ArgumentParser()
 
-    p.add_argument("--dataset", type=str, choices=["adult", "bank", "census", "communities"], default="adult")
+    p.add_argument(
+        "--dataset",
+        type=str,
+        choices=["adult", "bank", "census", "communities"],
+        default="adult",
+    )
     p.add_argument("--num_users", type=int, default=10)
     p.add_argument("--rounds", type=int, default=10)
     p.add_argument("--frac", type=float, default=1)
@@ -390,12 +433,13 @@ def parse_args():
         type=str,
         choices=["label-skew", "feature-skew"],
         default="label-skew",
-        help="Non-IID split type for tabular data (label-skew or feature-skew)"
+        help="Non-IID split type for tabular data (label-skew or feature-skew)",
     )
 
-
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    p.add_argument(
+        "--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu"
+    )
 
     # Local training
     p.add_argument("--local_epochs", type=int, default=1)
@@ -428,6 +472,7 @@ def parse_args():
 # Main
 ########################################
 
+
 def main():
     args = parse_args()
     set_seed(args.seed)
@@ -458,7 +503,9 @@ def main():
         emb_dim=args.emb_dim,
         hidden=args.hidden,
     )
-    global_wrapper = TorchModelWrapper(model, device=device, lr=args.global_lr, batch_size=args.global_bs)
+    global_wrapper = TorchModelWrapper(
+        model, device=device, lr=args.global_lr, batch_size=args.global_bs
+    )
 
     # 5) Partition clients
     if args.iid:
@@ -472,8 +519,9 @@ def main():
         if args.tabular_noniid == "feature-skew":
             user_groups = partition_feature_skew(Xn_tr, args.num_users, seed=args.seed)
         else:
-            user_groups = partition_label_skew(y_tr, args.num_users, shards_per_user=2, seed=args.seed)
-
+            user_groups = partition_label_skew(
+                y_tr, args.num_users, shards_per_user=2, seed=args.seed
+            )
 
     # 6) Server config + server
     server_cfg = GFLServerConfig(
@@ -497,7 +545,7 @@ def main():
             args.results_dir,
             f"gfl_{args.dataset}_users[{args.num_users}]_iid[{iid_val}]_"
             f"C[{args.frac}]_E[{args.rounds}]_localE[{args.local_epochs}]_B[{args.local_bs}]_"
-            f"split[{split_name}]_sens[{sensitive_attr_for_dataset(args.dataset)}]_seed[{args.seed}].csv"
+            f"split[{split_name}]_sens[{sensitive_attr_for_dataset(args.dataset)}]_seed[{args.seed}].csv",
         )
 
     header = [
@@ -557,7 +605,9 @@ def main():
                 # Local train
                 sd = local_train_one_client(
                     global_wrapper,
-                    Xn_tr[idx], Xc_tr[idx], y_tr[idx],
+                    Xn_tr[idx],
+                    Xc_tr[idx],
+                    y_tr[idx],
                     local_epochs=args.local_epochs,
                     lr=args.local_lr,
                     batch_size=args.local_bs,
@@ -581,7 +631,9 @@ def main():
             )
 
             # Compute train metrics on full train set (for compatibility)
-            train_metrics = compute_metrics_compat(global_wrapper, Xn_tr, Xc_tr, y_tr, g_tr)
+            train_metrics = compute_metrics_compat(
+                global_wrapper, Xn_tr, Xc_tr, y_tr, g_tr
+            )
             # Train loss/acc: we can approximate by running one pass BCE loss on train
             # For compatibility we keep it simple:
             # -> Use current model predictions to compute log loss mean
@@ -590,19 +642,31 @@ def main():
             y_tr_f = y_tr.astype(np.float64)
             eps = 1e-12
             train_loss = float(
-                -np.mean(y_tr_f * np.log(np.clip(y_score_tr, eps, 1 - eps)) +
-                         (1 - y_tr_f) * np.log(np.clip(1 - y_score_tr, eps, 1 - eps)))
+                -np.mean(
+                    y_tr_f * np.log(np.clip(y_score_tr, eps, 1 - eps))
+                    + (1 - y_tr_f) * np.log(np.clip(1 - y_score_tr, eps, 1 - eps))
+                )
             )
             train_accuracy = float(train_metrics["test_accuracy"])
 
             # Compute test metrics on real test set (for plot_result.py)
-            test_metrics = compute_metrics_compat(global_wrapper, Xn_te, Xc_te, y_te, g_te)
+            test_metrics = compute_metrics_compat(
+                global_wrapper, Xn_te, Xc_te, y_te, g_te
+            )
 
             # AFW diagnostics
-            alpha_vals = np.array(list(alphas.values()), dtype=np.float64) if alphas else np.array([], dtype=np.float64)
+            alpha_vals = (
+                np.array(list(alphas.values()), dtype=np.float64)
+                if alphas
+                else np.array([], dtype=np.float64)
+            )
             alpha_min = float(alpha_vals.min()) if alpha_vals.size else 0.0
             alpha_max = float(alpha_vals.max()) if alpha_vals.size else 0.0
-            alpha_entropy = float(-(alpha_vals * np.log(alpha_vals + 1e-12)).sum()) if alpha_vals.size else 0.0
+            alpha_entropy = (
+                float(-(alpha_vals * np.log(alpha_vals + 1e-12)).sum())
+                if alpha_vals.size
+                else 0.0
+            )
 
             # Console output
             print(
@@ -611,40 +675,42 @@ def main():
                 f"| synth_eod={global_metrics.eod:.4f} synth_dpd={global_metrics.dpd:.4f}"
             )
 
-            writer.writerow([
-                # --- required / legacy-compatible columns ---
-                r,
-                args.dataset,
-                "gfl_tabularnet",
-                args.num_users,
-                args.frac,
-                iid_val,
-                split_name,
-                args.rounds,                 # epochs field (global rounds) to match legacy
-                args.local_epochs,
-                args.local_bs,
-                args.seed,
-                train_loss,
-                train_accuracy,
-                test_metrics["test_accuracy"],
-                test_metrics["eop_gap"],
-                test_metrics["di_ratio"],
-                test_metrics["tpr_priv"],
-                test_metrics["tpr_unpriv"],
-                test_metrics["p_pos_unpriv"],
-                test_metrics["p_pos_priv"],
-                sensitive_attr_for_dataset(args.dataset),
-                # --- optional extras ---
-                args.fairness_mode,
-                int(args.use_gbcfss),
-                args.gbcfss_budget,
-                args.gbcfss_group_balance,
-                global_metrics.eod,
-                global_metrics.dpd,
-                alpha_min,
-                alpha_max,
-                alpha_entropy,
-            ])
+            writer.writerow(
+                [
+                    # --- required / legacy-compatible columns ---
+                    r,
+                    args.dataset,
+                    "gfl_tabularnet",
+                    args.num_users,
+                    args.frac,
+                    iid_val,
+                    split_name,
+                    args.rounds,  # epochs field (global rounds) to match legacy
+                    args.local_epochs,
+                    args.local_bs,
+                    args.seed,
+                    train_loss,
+                    train_accuracy,
+                    test_metrics["test_accuracy"],
+                    test_metrics["eop_gap"],
+                    test_metrics["di_ratio"],
+                    test_metrics["tpr_priv"],
+                    test_metrics["tpr_unpriv"],
+                    test_metrics["p_pos_unpriv"],
+                    test_metrics["p_pos_priv"],
+                    sensitive_attr_for_dataset(args.dataset),
+                    # --- optional extras ---
+                    args.fairness_mode,
+                    int(args.use_gbcfss),
+                    args.gbcfss_budget,
+                    args.gbcfss_group_balance,
+                    global_metrics.eod,
+                    global_metrics.dpd,
+                    alpha_min,
+                    alpha_max,
+                    alpha_entropy,
+                ]
+            )
 
     print(f"[OK] Wrote results to: {csv_path}")
 

@@ -37,7 +37,7 @@ Outputs:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 
@@ -93,7 +93,7 @@ def fairness_contribution_scores(
     s = np.full_like(y_true, 0.5, dtype=np.float64)
 
     if mode == "eo":
-        pos = (y_true == 1)
+        pos = y_true == 1
         if not np.any(pos):
             return s
 

@@ -19,8 +19,9 @@ class TabularDataset(Dataset):
     instead they are accessed via the .groups attribute.
     """
 
-    def __init__(self, features: torch.Tensor, labels: torch.Tensor,
-                 groups: torch.Tensor = None):
+    def __init__(
+        self, features: torch.Tensor, labels: torch.Tensor, groups: torch.Tensor = None
+    ):
         assert features.size(0) == labels.size(0)
         if groups is not None:
             assert features.size(0) == groups.size(0)
@@ -49,7 +50,9 @@ def _standardize_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def load_adult_dataset(data_dir: str, sensitive_attr: str = "sex") -> Tuple[Dataset, Dataset, int]:
+def load_adult_dataset(
+    data_dir: str, sensitive_attr: str = "sex"
+) -> Tuple[Dataset, Dataset, int]:
     """Load Adult income dataset from a single CSV file.
 
     Expected:
@@ -88,12 +91,14 @@ def load_adult_dataset(data_dir: str, sensitive_attr: str = "sex") -> Tuple[Data
 
     # Map common string labels to {0, 1}
     if y_raw.dtype == object:
-        y = y_raw.str.strip().replace({
-            "<=50K": 0,
-            "<=50K.": 0,
-            ">50K": 1,
-            ">50K.": 1,
-        })
+        y = y_raw.str.strip().replace(
+            {
+                "<=50K": 0,
+                "<=50K.": 0,
+                ">50K": 1,
+                ">50K.": 1,
+            }
+        )
         if not set(y.unique()).issubset({0, 1}):
             raise ValueError(
                 "Adult labels could not be mapped to {0,1}. "
@@ -165,7 +170,9 @@ def load_adult_dataset(data_dir: str, sensitive_attr: str = "sex") -> Tuple[Data
     return train_dataset, test_dataset, num_classes
 
 
-def load_bank_dataset(data_dir: str, sensitive_attr: str = "age") -> Tuple[Dataset, Dataset, int]:
+def load_bank_dataset(
+    data_dir: str, sensitive_attr: str = "age"
+) -> Tuple[Dataset, Dataset, int]:
     """Load Bank Marketing dataset from a single CSV file.
 
     Expected:
@@ -192,10 +199,12 @@ def load_bank_dataset(data_dir: str, sensitive_attr: str = "age") -> Tuple[Datas
 
     # Map 'yes'/'no' style labels to {0,1}
     if y_raw.dtype == object:
-        y = y_raw.str.strip().replace({
-            "no": 0,
-            "yes": 1,
-        })
+        y = y_raw.str.strip().replace(
+            {
+                "no": 0,
+                "yes": 1,
+            }
+        )
         if not set(y.unique()).issubset({0, 1}):
             raise ValueError(
                 "Bank labels could not be mapped to {0,1}. "
@@ -261,7 +270,9 @@ def load_bank_dataset(data_dir: str, sensitive_attr: str = "age") -> Tuple[Datas
     return train_dataset, test_dataset, num_classes
 
 
-def load_census_income_kdd_dataset(data_dir: str, sensitive_attr: str = "ASEX") -> Tuple[Dataset, Dataset, int]:
+def load_census_income_kdd_dataset(
+    data_dir: str, sensitive_attr: str = "ASEX"
+) -> Tuple[Dataset, Dataset, int]:
     """Load Census Income KDD dataset from a single CSV file.
 
     Expected:
@@ -275,9 +286,7 @@ def load_census_income_kdd_dataset(data_dir: str, sensitive_attr: str = "ASEX") 
     csv_path = os.path.join(data_dir, "census_income_kdd.csv")
     if not os.path.exists(csv_path):
         raise FileNotFoundError(
-            "Census Income KDD CSV not found. Expected file at: {}".format(
-                csv_path
-            )
+            "Census Income KDD CSV not found. Expected file at: {}".format(csv_path)
         )
 
     df = pd.read_csv(csv_path)
@@ -289,11 +298,13 @@ def load_census_income_kdd_dataset(data_dir: str, sensitive_attr: str = "ASEX") 
 
     # Map "-50000" / "50000+" to {0,1}
     if y_raw.dtype == object:
-        y = y_raw.str.strip().replace({
-            "-50000": 0,
-            "50000+": 1,
-            "50000+.": 1,
-        })
+        y = y_raw.str.strip().replace(
+            {
+                "-50000": 0,
+                "50000+": 1,
+                "50000+.": 1,
+            }
+        )
         if not set(y.unique()).issubset({0, 1}):
             bad_vals = sorted(v for v in y.unique() if v not in {0, 1})
             raise ValueError(
@@ -361,9 +372,11 @@ def load_census_income_kdd_dataset(data_dir: str, sensitive_attr: str = "ASEX") 
 
     num_classes = int(y_tensor.unique().numel())
     return train_dataset, test_dataset, num_classes
-    
 
-def load_communities_crime_dataset(data_dir: str, sensitive_attr: str = "racepctblack") -> Tuple[Dataset, Dataset, int]:
+
+def load_communities_crime_dataset(
+    data_dir: str, sensitive_attr: str = "racepctblack"
+) -> Tuple[Dataset, Dataset, int]:
     """Load Communities and Crime dataset from a single CSV file.
 
     Expected:
@@ -381,9 +394,7 @@ def load_communities_crime_dataset(data_dir: str, sensitive_attr: str = "racepct
     csv_path = os.path.join(data_dir, "communities_crime.csv")
     if not os.path.exists(csv_path):
         raise FileNotFoundError(
-            "Communities & Crime CSV not found. Expected file at: {}".format(
-                csv_path
-            )
+            "Communities & Crime CSV not found. Expected file at: {}".format(csv_path)
         )
 
     df = pd.read_csv(csv_path)

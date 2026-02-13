@@ -5,6 +5,7 @@ from typing import Dict, List
 # AGDG - Approximate Global Dataset Generation
 #########################################
 
+
 class AGDG:
     """
     Implements the AGDG module from the GFL paper.
@@ -64,24 +65,22 @@ class AGDG:
             # Weighted mean
             mu = sum(
                 (cs[g]["num"] / total_num) * cs[g]["mu"]
-                for cs in self.client_stats if g in cs
+                for cs in self.client_stats
+                if g in cs
             )
 
             # Weighted covariance
             sigma = sum(
                 (cs[g]["num"] / total_num) * cs[g]["sigma"]
-                for cs in self.client_stats if g in cs
+                for cs in self.client_stats
+                if g in cs
             )
 
             # Numerical stability
             eps = 1e-6
             sigma = sigma + eps * np.eye(sigma.shape[0])
 
-            global_stats[g] = {
-                "num": int(total_num),
-                "mu": mu,
-                "sigma": sigma
-            }
+            global_stats[g] = {"num": int(total_num), "mu": mu, "sigma": sigma}
 
         return global_stats
 
@@ -89,7 +88,9 @@ class AGDG:
     # Step 2: MVG Sampling
     #########################################
 
-    def generate_synthetic_numeric_data(self, global_stats: Dict[int, Dict[str, np.ndarray]]):
+    def generate_synthetic_numeric_data(
+        self, global_stats: Dict[int, Dict[str, np.ndarray]]
+    ):
         """
         Generates synthetic numerical samples per group using
         multivariate Gaussian distribution.
@@ -114,10 +115,7 @@ class AGDG:
             Xg = np.random.multivariate_normal(mean=mu, cov=sigma, size=num)
             gg = np.full(num, g)
 
-            synth_data[g] = {
-                "X_num": Xg,
-                "g": gg
-            }
+            synth_data[g] = {"X_num": Xg, "g": gg}
 
         return synth_data
 
@@ -140,6 +138,7 @@ class AGDG:
         global_stats = self.aggregate_statistics()
         synth_data = self.generate_synthetic_numeric_data(global_stats)
         return synth_data, global_stats
+
 
 #########################################
 # Helper function

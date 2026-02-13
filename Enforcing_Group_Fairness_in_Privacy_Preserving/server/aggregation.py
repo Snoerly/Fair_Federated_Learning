@@ -21,7 +21,7 @@ in each round. If you want the additive form, set use_additive=True.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
+from typing import Dict
 
 import numpy as np
 
@@ -31,7 +31,9 @@ class AFWResult:
     weights: Dict[int, float]  # alpha_i
 
 
-def compute_alphas(fairness_bias: Dict[int, float], eps: float = 1e-12) -> Dict[int, float]:
+def compute_alphas(
+    fairness_bias: Dict[int, float], eps: float = 1e-12
+) -> Dict[int, float]:
     """Compute alpha_i = Fi / sum(Fi).
 
     If all Fi are 0 (already perfectly fair), fallback to uniform weights.
@@ -101,7 +103,11 @@ def aggregate_state_dicts(
     first_val = next(iter(client_state_dicts.values()))[keys[0]]
     if hasattr(first_val, "detach"):
         import torch
-        new_state = {k: torch.tensor(v, dtype=first_val.dtype, device=first_val.device) for k, v in agg_np.items()}
+
+        new_state = {
+            k: torch.tensor(v, dtype=first_val.dtype, device=first_val.device)
+            for k, v in agg_np.items()
+        }
     else:
         new_state = agg_np
 

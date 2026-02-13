@@ -5,6 +5,7 @@ from typing import Dict
 # SIC - Statistical Information Collection
 #########################################
 
+
 class ClientStatistics:
     """
     Computes group-wise statistics required for AGDG:
@@ -49,7 +50,7 @@ class ClientStatistics:
         groups = np.unique(self.g)
 
         for group in groups:
-            idx = (self.g == group)
+            idx = self.g == group
             Xg = self.X_num[idx]
 
             # Safety for empty groups
@@ -66,13 +67,10 @@ class ClientStatistics:
             eps = 1e-6
             sigma = sigma + eps * np.eye(sigma.shape[0])
 
-            stats[int(group)] = {
-                "num": int(num),
-                "mu": mu,
-                "sigma": sigma
-            }
+            stats[int(group)] = {"num": int(num), "mu": mu, "sigma": sigma}
 
         return stats
+
 
 #########################################
 # Helper function for multiple clients
@@ -95,7 +93,7 @@ def collect_all_client_stats(clients_data):
     """
     all_stats = []
 
-    for (X_num, y, g) in clients_data:
+    for X_num, y, g in clients_data:
         sic = ClientStatistics(X_num, y, g)
         stats = sic.compute()
         all_stats.append(stats)

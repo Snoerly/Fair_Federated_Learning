@@ -23,7 +23,6 @@ from __future__ import annotations
 
 import numpy as np
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 
 @dataclass
@@ -69,8 +68,8 @@ def metrics_from_scores(
     y_true = np.asarray(y_true).reshape(-1)
     g = np.asarray(g).reshape(-1)
 
-    mask_g0 = (g == 0)
-    mask_g1 = (g == 1)
+    mask_g0 = g == 0
+    mask_g1 = g == 1
 
     # Demographic Parity Difference
     dp_g0 = _safe_mean(y_score[mask_g0])
@@ -78,7 +77,7 @@ def metrics_from_scores(
     dpd = abs(dp_g1 - dp_g0)
 
     # Equal Opportunity Difference: conditioned on y=1
-    pos = (y_true == 1)
+    pos = y_true == 1
     eod_g0 = _safe_mean(y_score[mask_g0 & pos])
     eod_g1 = _safe_mean(y_score[mask_g1 & pos])
     eod = abs(eod_g1 - eod_g0)
@@ -100,8 +99,8 @@ def metrics_from_preds(
     y_true = np.asarray(y_true).reshape(-1)
     g = np.asarray(g).reshape(-1)
 
-    mask_g0 = (g == 0)
-    mask_g1 = (g == 1)
+    mask_g0 = g == 0
+    mask_g1 = g == 1
 
     # DPD
     dp_g0 = _safe_mean(y_pred[mask_g0])
@@ -109,7 +108,7 @@ def metrics_from_preds(
     dpd = abs(dp_g1 - dp_g0)
 
     # EOD
-    pos = (y_true == 1)
+    pos = y_true == 1
     eod_g0 = _safe_mean(y_pred[mask_g0 & pos])
     eod_g1 = _safe_mean(y_pred[mask_g1 & pos])
     eod = abs(eod_g1 - eod_g0)
