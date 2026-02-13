@@ -7,9 +7,9 @@ We report our findings in this [Paper]().
 
 ### Algorithms
 
-- [GIFAIR-FL]()
-- [FairTrade]()
-- [EnforcingGroupFairness]()
+- [GIFAIR-FL](https://doi.org/10.1287/ijds.2022.0022)
+- [FairTrade](https://doi.org/10.1609/aaai.v38i10.28971)
+- [EnforcingGroupFairness](https://doi.org/10.1016/j.future.2024.06.040)
 
 ### Datasets
 
