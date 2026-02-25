@@ -14,16 +14,18 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
+# Re-use the GIFAIR-FL tabular pipeline and fairness metrics from this repository.
+from utils import get_dataset, average_weights
+from fairness_metrics import compute_fairness_metrics
+from constraint import DemographicParityLoss, AverageTreatmentEffectLoss
+
 ROOT = Path(__file__).resolve().parent
 GIFAIR_ROOT = ROOT.parent / "GIFAIR-FL"
 
 if str(GIFAIR_ROOT) not in sys.path:
     sys.path.insert(0, str(GIFAIR_ROOT))
 
-# Re-use the GIFAIR-FL tabular pipeline and fairness metrics from this repository.
-from utils import get_dataset, average_weights
-from fairness_metrics import compute_fairness_metrics
-from constraint import DemographicParityLoss, AverageTreatmentEffectLoss
+
 
 
 @dataclass

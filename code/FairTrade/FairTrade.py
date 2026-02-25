@@ -1,5 +1,6 @@
 import torch
 import argparse
+import os
 from utilities import find_ate_2, find_statistical_parity_score, all_metrics
 from load_data_utilities import get_data, load_dataset
 from constraint import AverageTreatmentEffectLoss, DemographicParityLoss
@@ -242,7 +243,6 @@ def evaluate(alpha=100, lr=0.001, cost_false_negatives=5):
             y_pred_cls.cpu(), ytest_potential, sex_list
         )  # 0 means female-protected attribute
         # acc = (y_pred_cls == y_test).float().mean()
-        auprc = average_precision_score(y_test.cpu(), probs.cpu())
         print(f"Communication round {round + 1}/{communication_rounds}")
         if communication_rounds % 1 == 0:
             print(f"Test accuracy: {acc.item()}")
@@ -379,8 +379,6 @@ with torch.no_grad():
     print("ate: %s" % ate)
 
 destination = "./results/"
-
-import os
 
 if not os.path.exists(destination + dataset_name):
     os.makedirs(destination + dataset_name)

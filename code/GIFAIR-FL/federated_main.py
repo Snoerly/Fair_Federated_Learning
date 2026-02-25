@@ -115,7 +115,7 @@ if __name__ == "__main__":
     # Encode möglichst viele Konfigurationsparameter im Dateinamen,
     # damit verschiedene Läufe nicht kollidieren.
     csv_name = (
-        "save/results/gfl_{}_users[{}]_iid[{}]_C[{}]_E[{}]_localE[{}]_B[{}]_split[{}]_sens[{}]_seed[{}].csv"
+        "save/results/gifair_{}_users[{}]_iid[{}]_C[{}]_E[{}]_localE[{}]_B[{}]_split[{}]_sens[{}]_seed[{}].csv"
     ).format(
         args.dataset,
         args.num_users,

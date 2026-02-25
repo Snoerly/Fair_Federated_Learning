@@ -289,7 +289,6 @@ def find_class_weights(labels, majority_label=0, minority_label=1):
     unique, counts = np.unique(labels, return_counts=True)
     count_ap_dict = dict(zip(unique, counts))
 
-    majority_class_weight = 1
     minority_class_weight = count_ap_dict.get(majority_label, 0) / count_ap_dict.get(
         minority_label, 1
     )

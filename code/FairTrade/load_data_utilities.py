@@ -344,7 +344,7 @@ def load_adult_age(url, sensitive_feature):
     df2, test_df2 = train_test_split(df2, test_size=0.1, random_state=42)
     df3, test_df3 = train_test_split(df3, test_size=0.1, random_state=42)
     # Split the data into features and labels
-    test_df = result = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
+    test_df = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
     test_df[numerical_columns] = scaler.fit_transform(test_df[numerical_columns])
     X_client1 = df1.drop("income", axis=1)
     y_client1 = LabelEncoder().fit_transform(df1["income"])
@@ -500,7 +500,7 @@ def load_bank_age(url, sensitive_feature):
     df2, test_df2 = train_test_split(df2, test_size=0.1, random_state=42)
     df3, test_df3 = train_test_split(df3, test_size=0.1, random_state=42)
     # Split the data into features and labels
-    test_df = result = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
+    test_df = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
     test_df[numerical_columns] = scaler.fit_transform(test_df[numerical_columns])
     X_client1 = df1.drop("y", axis=1)
     y_client1 = LabelEncoder().fit_transform(df1["y"])
@@ -682,7 +682,7 @@ def load_default_age(url, sensitive_feature):
     df2, test_df2 = train_test_split(df2, test_size=0.1, random_state=42)
     df3, test_df3 = train_test_split(df3, test_size=0.1, random_state=42)
     # Split the data into features and labels
-    test_df = result = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
+    test_df = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
     test_df[numerical_columns] = scaler.fit_transform(test_df[numerical_columns])
     X_client1 = df1.drop("y", axis=1)
     y_client1 = LabelEncoder().fit_transform(df1["y"])
@@ -1040,7 +1040,7 @@ def load_kdd_age(url, sensitive_feature):
     df2, test_df2 = train_test_split(df2, test_size=0.1, random_state=42)
     df3, test_df3 = train_test_split(df3, test_size=0.1, random_state=42)
     # Split the data into features and labels
-    test_df = result = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
+    test_df = pd.concat([test_df1, test_df2, test_df3], ignore_index=True)
     test_df[numerical_columns] = scaler.fit_transform(test_df[numerical_columns])
     X_client1 = df1.drop("class", axis=1)
     y_client1 = LabelEncoder().fit_transform(df1["class"])

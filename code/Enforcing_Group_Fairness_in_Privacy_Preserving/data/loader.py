@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
-from typing import Tuple, Optional, List
+from typing import Tuple, List
 from pathlib import Path
 
 import numpy as np

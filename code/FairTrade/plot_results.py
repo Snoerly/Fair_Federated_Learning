@@ -88,8 +88,8 @@ def plot_csv(csv_path, out_dir):
     # Combine legends from both axes
     lines, labels = [], []
     for ax in [ax1, ax2]:
-        l, lab = ax.get_legend_handles_labels()
-        lines.extend(l)
+        line, lab = ax.get_legend_handles_labels()
+        lines.extend(line)
         labels.extend(lab)
     if lines:
         ax1.legend(lines, labels, loc="best")
