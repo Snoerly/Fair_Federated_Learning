@@ -3,6 +3,7 @@
 # Python version: 3.6
 
 import copy
+from pathlib import Path
 import torch
 from torchvision import datasets, transforms
 from sampling import mnist_iid, mnist_noniid, mnist_noniid_unequal
@@ -14,6 +15,10 @@ from tabular_datasets import (
     load_census_income_kdd_dataset,
     load_communities_crime_dataset,
 )
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+DATASETS_ROOT = REPO_ROOT / "datasets"
 
 
 def get_dataset(args):
@@ -85,7 +90,7 @@ def get_dataset(args):
 
     elif args.dataset == "adult":
         # Tabellarischer Adult-Datensatz aus CSV
-        data_dir = "../data/adult/"
+        data_dir = str(DATASETS_ROOT / "adult")
         train_dataset, test_dataset, num_classes = load_adult_dataset(
             data_dir, sensitive_attr=getattr(args, "sensitive_attr", "sex")
         )
@@ -108,7 +113,7 @@ def get_dataset(args):
 
     elif args.dataset == "bank":
         # Tabellarischer Bank-Datensatz aus CSV
-        data_dir = "../data/bank/"
+        data_dir = str(DATASETS_ROOT / "bank")
         train_dataset, test_dataset, num_classes = load_bank_dataset(
             data_dir, sensitive_attr=getattr(args, "sensitive_attr", "age")
         )
@@ -127,7 +132,7 @@ def get_dataset(args):
 
     elif args.dataset == "census_income_kdd":
         # Tabellarischer Census Income KDD-Datensatz aus CSV
-        data_dir = "../data/census_income_kdd/"
+        data_dir = str(DATASETS_ROOT / "census_income_kdd")
         train_dataset, test_dataset, num_classes = load_census_income_kdd_dataset(
             data_dir, sensitive_attr=getattr(args, "sensitive_attr", "ASEX")
         )
@@ -146,7 +151,7 @@ def get_dataset(args):
 
     elif args.dataset == "communities_crime":
         # Tabellarischer Communities and Crime-Datensatz aus CSV
-        data_dir = "../data/communities_crime/"
+        data_dir = str(DATASETS_ROOT / "communities_crime")
         train_dataset, test_dataset, num_classes = load_communities_crime_dataset(
             data_dir, sensitive_attr=getattr(args, "sensitive_attr", "racepctblack")
         )

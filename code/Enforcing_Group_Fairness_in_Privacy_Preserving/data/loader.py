@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from typing import Tuple, Optional, List
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -22,8 +23,8 @@ class DatasetBundle:
 # Helpers
 # ----------------------------
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA_DIR = os.path.join(BASE_DIR, "data")
+REPO_ROOT = Path(__file__).resolve().parents[3]
+DATA_DIR = str(REPO_ROOT / "datasets")
 
 
 def _read_csv_robust(path: str) -> pd.DataFrame:

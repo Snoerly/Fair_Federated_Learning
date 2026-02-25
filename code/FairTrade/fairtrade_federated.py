@@ -4,6 +4,7 @@ import argparse
 import copy
 import csv
 import random
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Sequence, Tuple
@@ -14,11 +15,14 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 ROOT = Path(__file__).resolve().parent
+GIFAIR_ROOT = ROOT.parent / "GIFAIR-FL"
 
-# Re-use the GIFAIR tabular pipeline and fairness metrics from a local copy to
-# avoid reaching outside this repository.
-from GIFAIR.utils import get_dataset, average_weights
-from GIFAIR.fairness_metrics import compute_fairness_metrics
+if str(GIFAIR_ROOT) not in sys.path:
+    sys.path.insert(0, str(GIFAIR_ROOT))
+
+# Re-use the GIFAIR-FL tabular pipeline and fairness metrics from this repository.
+from utils import get_dataset, average_weights
+from fairness_metrics import compute_fairness_metrics
 from constraint import DemographicParityLoss, AverageTreatmentEffectLoss
 
 

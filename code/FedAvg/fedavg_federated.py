@@ -17,14 +17,13 @@ from torch.utils.data import DataLoader, Dataset
 ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = ROOT.parent
 
-# Re-use the tabular pipeline from FairTrade's local GIFAIR copy.
-# This keeps dataset handling consistent with the other scripts.
-FAIRTRADE_ROOT = PROJECT_ROOT / "FairTrade"
-if FAIRTRADE_ROOT.exists():
-    sys.path.insert(0, str(FAIRTRADE_ROOT))
+# Re-use the tabular pipeline from GIFAIR-FL.
+GIFAIR_ROOT = PROJECT_ROOT / "GIFAIR-FL"
+if GIFAIR_ROOT.exists():
+    sys.path.insert(0, str(GIFAIR_ROOT))
 
-from GIFAIR.utils import get_dataset, average_weights  # noqa: E402
-from GIFAIR.fairness_metrics import compute_fairness_metrics  # noqa: E402
+from utils import get_dataset, average_weights  # noqa: E402
+from fairness_metrics import compute_fairness_metrics  # noqa: E402
 
 
 @dataclass
