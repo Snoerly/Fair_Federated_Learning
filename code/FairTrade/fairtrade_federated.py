@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import copy
 import csv
+import importlib.util
 import random
 import sys
 from dataclasses import dataclass
@@ -14,16 +15,28 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
-# Re-use the GIFAIR-FL tabular pipeline and fairness metrics from this repository.
-from utils import get_dataset, average_weights
-from fairness_metrics import compute_fairness_metrics
-from constraint import DemographicParityLoss, AverageTreatmentEffectLoss
-
 ROOT = Path(__file__).resolve().parent
 GIFAIR_ROOT = ROOT.parent / "GIFAIR-FL"
 
 if str(GIFAIR_ROOT) not in sys.path:
     sys.path.insert(0, str(GIFAIR_ROOT))
+
+# Re-use the GIFAIR-FL tabular pipeline and fairness metrics from this repository.
+# NOTE: GIFAIR-FL's folder name contains a dash, so we load its utils.py by file path.
+_gifair_utils_path = GIFAIR_ROOT / "utils.py"
+_gifair_utils_spec = importlib.util.spec_from_file_location(
+    "gifair_utils", _gifair_utils_path
+)
+if _gifair_utils_spec is None or _gifair_utils_spec.loader is None:
+    raise ImportError(f"Cannot load GIFAIR-FL utils from {_gifair_utils_path}")
+_gifair_utils = importlib.util.module_from_spec(_gifair_utils_spec)
+_gifair_utils_spec.loader.exec_module(_gifair_utils)
+
+get_dataset = _gifair_utils.get_dataset
+average_weights = _gifair_utils.average_weights
+
+from fairness_metrics import compute_fairness_metrics
+from constraint import DemographicParityLoss, AverageTreatmentEffectLoss
 
 
 
